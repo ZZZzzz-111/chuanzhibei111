@@ -1,0 +1,38 @@
+/**
+ * 临时遛狗官页专属样式
+ * 只放 Tailwind 表达不了的少量内容：数字圆体、卡片投影、
+ * 小狗沿路线小跑（offset-path）、漂浮云朵（复用 index.css 的 cloud-drift）
+ */
+
+/* 匹配度 / 时间等数字：圆润的展示字体，回退链覆盖 Mac / 中文 Windows */
+.num-display {
+  font-family: 'Baloo 2', 'Arial Rounded MT Bold', '幼圆', 'YouYuan', 'Segoe UI', sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 卡片投影：柔和的主题色投影，与首页 module-pill 的 --sc 方案同语言 */
+.walk-card {
+  box-shadow:
+    0 14px 28px -18px rgba(46, 125, 70, 0.28),
+    0 2px 6px rgba(59, 47, 38, 0.05);
+}
+
+.walk-card--selected {
+  box-shadow:
+    0 16px 30px -16px rgba(46, 125, 70, 0.4),
+    0 2px 6px rgba(59, 47, 38, 0.05);
+}
+
+/* 路线小狗由 SVG animateMotion 驱动（reduced-motion 时整段不渲染） */
+
+/* 云朵漂移：不同周期形成视差 */
+.walk-cloud {
+  position: absolute;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .walk-cloud {
+    animation: cloud-drift linear infinite;
+  }
+}

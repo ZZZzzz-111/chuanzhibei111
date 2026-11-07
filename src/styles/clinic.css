@@ -1,0 +1,45 @@
+/**
+ * 赛博诊所页专属样式 —— 「处方笺」
+ * 稿纸横线、红印章、当前步骤呼吸点
+ */
+
+/* 处方笺稿纸：等距淡青横线（贴着文字基线书写的感觉） */
+.rp-ruled {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0 23px,
+    rgba(15, 118, 110, 0.14) 23px 24px
+  );
+}
+
+/* 红印章：圆形双圈描边 + 微微油墨不均 */
+.rp-stamp {
+  color: #c2453d;
+  border: 2.5px solid currentColor;
+  border-radius: 9999px;
+  box-shadow: inset 0 0 0 3px #f2f7f5, inset 0 0 0 4.5px currentColor;
+  opacity: 0.82;
+}
+
+/* 当前诊疗步骤的呼吸点 */
+@keyframes rp-breath {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.45);
+    opacity: 0.55;
+  }
+}
+
+.rp-breath {
+  animation: rp-breath 1.1s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rp-breath {
+    animation: none;
+  }
+}

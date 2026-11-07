@@ -1,0 +1,93 @@
+/**
+ * 宠物美容院页专属样式 —— 「泡泡变身屋」
+ * 泡泡上升、吹干风线、完成闪光环；全部仅在无障碍设置允许动效时播放
+ */
+
+/* 泡泡浴：泡泡从镜面底部升起 */
+.groom-bubble {
+  position: absolute;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.95), rgba(216, 238, 249, 0.55) 65%, rgba(11, 119, 190, 0.18));
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .groom-bubble {
+    animation: groom-bubble-rise 3.6s ease-in infinite;
+  }
+  .groom-bubble:nth-child(2) {
+    animation-delay: -1.1s;
+  }
+  .groom-bubble:nth-child(3) {
+    animation-delay: -2.2s;
+  }
+}
+
+@keyframes groom-bubble-rise {
+  0% {
+    transform: translateY(10px) scale(0.7);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translateY(-210px) scale(1.05);
+    opacity: 0;
+  }
+}
+
+/* 吹干：风线左右摆 */
+.groom-wind {
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .groom-wind {
+    animation: groom-wind-sway 0.9s ease-in-out infinite;
+  }
+  .groom-wind:nth-child(2) {
+    animation-delay: -0.3s;
+  }
+  .groom-wind:nth-child(3) {
+    animation-delay: -0.6s;
+  }
+}
+
+@keyframes groom-wind-sway {
+  0%,
+  100% {
+    transform: translateX(-6px);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateX(6px);
+    opacity: 0.85;
+  }
+}
+
+/* 完成闪光环 */
+@media (prefers-reduced-motion: no-preference) {
+  .groom-sparkle {
+    animation: groom-sparkle-pop 1.6s ease-in-out infinite;
+  }
+  .groom-sparkle:nth-child(2) {
+    animation-delay: -0.5s;
+  }
+  .groom-sparkle:nth-child(3) {
+    animation-delay: -1s;
+  }
+}
+
+@keyframes groom-sparkle-pop {
+  0%,
+  100% {
+    transform: scale(0.85);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}

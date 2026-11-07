@@ -1,0 +1,7 @@
+name = "czb-glm-proxy"
+main = "glm-proxy.js"
+compatibility_date = "2025-01-01"
+
+# GLM_API_KEY 通过 secret 注入（不入库）：
+#   wrangler secret put GLM_API_KEY
+# 或通过 Cloudflare API（见 worker/deploy.sh）

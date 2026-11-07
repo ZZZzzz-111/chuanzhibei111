@@ -1,0 +1,54 @@
+/**
+ * 鲜食食堂页专属样式 —— 「厨房案台」
+ * 陶碗、热气、食谱卡撕票边
+ */
+
+/* 食谱卡顶部撕票锯齿边：一排半圆缺口 */
+.recipe-ticket {
+  --notch: 10px;
+  -webkit-mask-image: radial-gradient(
+    circle var(--notch) at var(--notch) 0,
+    transparent 98%,
+    #000 calc(100% + 1px)
+  );
+  -webkit-mask-size: calc(var(--notch) * 2) 100%;
+  -webkit-mask-repeat: repeat-x;
+  mask-image: radial-gradient(
+    circle var(--notch) at var(--notch) 0,
+    transparent 98%,
+    #000 calc(100% + 1px)
+  );
+  mask-size: calc(var(--notch) * 2) 100%;
+  mask-repeat: repeat-x;
+}
+
+/* 碗口热气：烹饪时三缕蒸汽缓缓上升 */
+.steam-path {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cooking .steam-path {
+    animation: steam-rise 1.4s ease-in-out infinite;
+  }
+  .cooking .steam-path:nth-child(2) {
+    animation-delay: 0.45s;
+  }
+  .cooking .steam-path:nth-child(3) {
+    animation-delay: 0.9s;
+  }
+}
+
+@keyframes steam-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  35% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+}
