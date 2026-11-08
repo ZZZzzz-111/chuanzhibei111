@@ -14,7 +14,7 @@ import {
   UserRound,
 } from 'lucide-react'
 import { useToast } from '../components/Toast'
-import { isApiConfigured, streamChat, type ChatMessage } from '../lib/glm'
+import { aiUnavailableReason, streamChat, type ChatMessage } from '../lib/glm'
 import {
   BODY_SIZES,
   GROOMERS,
@@ -150,7 +150,7 @@ function MagicMirror({ phase, stage, sizeId }: { phase: Phase; stage: MirrorStag
 
 function Groom() {
   const toast = useToast()
-  const configured = isApiConfigured()
+  const aiUnavailable = aiUnavailableReason()
 
   // —— 选择区 ——
   const [serviceIds, setServiceIds] = useState<string[]>([])
@@ -198,8 +198,8 @@ function Groom() {
   const askAdvisor = () => {
     const q = aiInput.trim()
     if (!q || aiPhase === 'thinking' || aiPhase === 'streaming') return
-    if (!configured) {
-      toast.error('请先配置 VITE_GLM_API_KEY')
+    if (aiUnavailable) {
+      toast.error(aiUnavailable)
       return
     }
     setAiPhase('thinking')
@@ -562,9 +562,9 @@ function Groom() {
               <h2 className="mb-3 flex items-center gap-2 text-base font-black">
                 <Sparkles size={17} className="text-[#0B77BE]" aria-hidden="true" /> AI 造型顾问
               </h2>
-              {!configured && (
+              {aiUnavailable && (
                 <p className="mb-3 rounded-xl bg-[#FBF7EF] px-3 py-2 text-xs font-bold text-[#8A6116]">
-                  尚未配置 API Key，顾问暂时离线（.env 填 VITE_GLM_API_KEY 后重启）
+                  {aiUnavailable}
                 </p>
               )}
               <div className="flex gap-2">

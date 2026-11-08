@@ -8,7 +8,10 @@
  */
 const WORKER_URL = 'https://czb-glm-proxy.2160410393.workers.dev'
 
-const USE_WORKER = import.meta.env.DEV === false || Boolean(import.meta.env.VITE_GLM_PROXY_URL)
+/** 显式配置了 Worker 地址（VITE_GLM_PROXY_URL）时，生产环境 AI 全量可用 */
+const EXPLICIT_WORKER = Boolean(import.meta.env.VITE_GLM_PROXY_URL)
+
+const USE_WORKER = EXPLICIT_WORKER || import.meta.env.DEV === false
 
 const API_URL: string =
   import.meta.env.VITE_GLM_PROXY_URL ?? (import.meta.env.DEV ? '/api/glm/chat/completions' : WORKER_URL)
@@ -18,12 +21,26 @@ const MODEL = 'glm-4-flash'
 export const GLM_API_KEY: string = import.meta.env.VITE_GLM_API_KEY ?? ''
 
 /**
- * AI 是否可用：
- * - 本地：.env 配置了 VITE_GLM_API_KEY 即可
- * - 生产：Worker 已托管 Key，恒可用（Worker 缺 Secret 时接口返回 500，前端降级提示）
+ * AI 是否可用（不可用时请展示 aiUnavailableReason() 的引导文案）
  */
 export function isApiConfigured(): boolean {
-  return USE_WORKER || GLM_API_KEY.length > 0
+  return aiUnavailableReason() === null
+}
+
+/**
+ * AI 不可用时的面向用户说明；null = 可用。
+ * - 显式配置了 Worker（VITE_GLM_PROXY_URL）：生产环境 AI 全量可用
+ * - 线上静态版（GitHub Pages 直发、未配 Worker）：不发起注定失败的请求，给出引导
+ * - 本地开发：检查 .env 的 Key
+ */
+export function aiUnavailableReason(): string | null {
+  if (EXPLICIT_WORKER) return null
+  if (import.meta.env.DEV === false) {
+    return '在线演示版未包含 AI 服务。请在本地运行项目体验完整 AI 功能（配置方法见 README），或观看演示视频。'
+  }
+  return GLM_API_KEY.length > 0
+    ? null
+    : '尚未配置 API Key。请复制 .env.example 为 .env，填入智谱 VITE_GLM_API_KEY 后重启开发服务器。'
 }
 
 export interface ChatMessage {

@@ -11,7 +11,7 @@ import {
   Stethoscope,
   UserRound,
 } from 'lucide-react'
-import { isApiConfigured, streamChat, type ChatMessage } from '../lib/glm'
+import { aiUnavailableReason, streamChat, type ChatMessage } from '../lib/glm'
 import '../styles/walk.css'
 import '../styles/clinic.css'
 
@@ -125,7 +125,7 @@ function Clinic() {
   const chatRef = useRef<HTMLDivElement>(null)
   const abortRef = useRef<AbortController | null>(null)
   const toast = useToast()
-  const configured = isApiConfigured()
+  const aiUnavailable = aiUnavailableReason()
 
   const busy = phase === 'thinking' || phase === 'streaming'
   const medicines = useMemo(() => parseMedicines(turns.filter((t) => t.role === 'assistant').map((t) => t.text).join('\n')), [turns])
@@ -144,8 +144,8 @@ function Clinic() {
   async function ask(question: string) {
     const q = question.trim()
     if (!q || busy) return
-    if (!configured) {
-      toast.error('请先配置 VITE_GLM_API_KEY')
+    if (aiUnavailable) {
+      toast.error(aiUnavailable)
       return
     }
     setErrorMsg('')
@@ -238,9 +238,9 @@ function Clinic() {
               <span className="text-sm font-bold text-[#0F766E]">· {busy ? '问诊中' : '待问诊'}</span>
             </h1>
 
-            {!configured && (
+            {aiUnavailable && (
               <div className="mb-5 rounded-2xl border-2 border-dashed border-[#D9A441]/60 bg-[#FBF7EF] px-4 py-3 text-sm font-bold text-[#8A6116]">
-                尚未配置 API Key。请在项目根目录的 <code className="rounded bg-[#F6E7C8] px-1">.env</code> 中填入 <code className="rounded bg-[#F6E7C8] px-1">VITE_GLM_API_KEY</code>，然后重启开发服务器。
+                {aiUnavailable}
               </div>
             )}
 
@@ -324,7 +324,7 @@ function Clinic() {
               <button
                 type="button"
                 onClick={() => ask(input)}
-                disabled={busy || !input.trim() || !configured}
+                disabled={busy || !input.trim() || !aiUnavailable}
                 className="inline-flex min-h-[48px] items-center gap-1.5 rounded-2xl bg-[#0F766E] px-5 text-sm font-black text-white shadow-[0_14px_24px_-12px_rgba(15,118,110,0.7)] transition-colors hover:bg-[#0C5F58] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Send size={15} aria-hidden="true" />

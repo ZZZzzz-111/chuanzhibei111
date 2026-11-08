@@ -148,9 +148,11 @@ npm run lint
 
 ### 在线演示
 
-- 演示地址：`https://zzzzzz-111.github.io/<仓库名>/` （GitHub Pages 部署）
-- AI 功能由 Cloudflare Worker 中转智谱 GLM-4-flash
+- 演示地址：`https://zzzzzz-111.github.io/chuanzhibei111/` （GitHub Pages）
+- **在线演示为静态版，不包含 AI 服务**（`*.workers.dev` 中转域名在国内网络不可达）：星球、遛狗、配餐、商店、雷达、社区、美容预约全部可正常体验；AI 问诊与 AI 造型顾问会显示引导提示
+- **完整 AI 功能请本地运行体验**：`npm install` → 复制 `.env.example` 为 `.env` 填入智谱 Key → `npm run dev`（详见上方安装指南）
 - 评审期间可直接访问，所有数据保存在浏览器 localStorage
+- AI 能力演示见参赛视频
 
 ## 团队信息
 
