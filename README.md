@@ -1,32 +1,176 @@
-# React + TypeScript + Vite
+# 川知贝 · 宠物星球
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+> 让每一只宠物都被温柔照顾 —— 面向宠物家庭的一站式 AI 陪伴服务平台
+>
+> 传智杯参赛作品 · B 组 · No crash 团队
 
-Currently, two official plugins are available:
+## 项目介绍
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+「川知贝」是一个以**生态星球**为载体的宠物服务平台：一位主人牵着小狗在星球上漫步，星球边缘散落着六个功能模块，对应宠物一天中的完整生活轨迹。项目以「**一天的陪伴**」为叙事主线，将六个模块映射到一天的六个时段——清晨遛弯、上午美容、白天做饭、午后诊所、黄昏社区、夜里寻宠。
 
-## React Compiler
+### 六大功能模块
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| 模块 | 时段 | 核心功能 |
+|------|------|---------|
+| 🦮 **临时遛狗官** | 清晨·公园 | AI 匹配附近遛狗官、实时轨迹追踪（24 小时隐私窗口）、服务回放 |
+| ✂️ **宠物美容院** | 上午·美容院 | AI 造型顾问（GLM 流式问答 + 一键应用推荐）、服务/体型/造型/美容师选择、「变身镜」四阶段动画、预约表单验证 |
+| 🍳 **鲜食食堂** | 白天·厨房 | 食材拖拽配餐（dnd-kit）、12 种食材营养数据、钙磷比健康区间校验、粮食商店与购物车（下单表单验证） |
+| 🩺 **赛博诊所** | 午后·诊室 | AI 兽医流式问诊、诊断流程可视化、「处方笺」结构化药品推荐 + 免责印章 |
+| 🌐 **宠物圈** | 黄昏·社区 | 小红书式双列瀑布流、关注/发现/附近分栏、实时搜索、点赞收藏、笔记详情弹层 |
+| 📡 **寻宠雷达** | 夜里·雷达站 | 特征标签筛选、雷达扫描动画、相似度线索匹配、一键联系发现者 |
 
-## Expanding the Oxlint configuration
+### 设计特色
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+- **叙事化设计系统**：六模块 = 六时段，统一的卡片语言、圆体数字、图标体系与动效纪律（每页一个「记忆点」：遛狗官的牵引绳、诊所的红印章、美容院的变身镜……）
+- **昼夜星球首页**：双渐变交叉淡入的天空、月亮与流星、星球体积光、人狗精灵图沿球面漫步、牵引绳随动贝塞尔曲线
+- **无障碍与降级**：`MotionConfig reducedMotion` 全站尊重系统减弱动效、键盘可达、字体加载失败自动回退本地圆体
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+## 技术架构
+
+### 技术栈
+
+| 层级 | 技术 | 版本 | 说明 |
+|------|------|------|------|
+| 框架 | React | 19.3 | 函数组件 + Hooks |
+| 语言 | TypeScript | 7.0 | 全量类型 |
+| 构建 | Vite | 8.3 | Oxc 构建，自带 GLM 代理中间件 |
+| 样式 | Tailwind CSS | 4.3 | 原子化 + 设计 Token |
+| 动画 | Framer Motion | 14.9 | 声明式动画 |
+| 拖拽 | @dnd-kit/core | 6.3 | 食材拖拽配餐 |
+| 粒子 | @tsparticles/slim | 4.5 | 夜空星幕 |
+| 路由 | react-router-dom | 7.18 | SPA 路由 |
+| 图标 | lucide-react | 1.68 | 统一图标体系 |
+| AI | 智谱 GLM-4-flash | — | SSE 流式对话 |
+| 测试 | Vitest + Testing Library | 5.1 / 16.3 | 集成测试 27 项 |
+| 规范 | Oxlint | 1.89 | 代码静态检查 |
+
+### 架构概览
+
+```
+┌────────────────────────────────────────────────┐
+│                  浏览器（纯前端 SPA）             │
+│  ┌──────────┐  ┌──────────┐  ┌───────────────┐  │
+│  │ 星球首页  │  │ 六大功能页 │  │ 路由（7 条）   │  │
+│  └──────────┘  └──────────┘  └───────────────┘  │
+│  ┌──────────────────────────────────────────┐  │
+│  │  模拟后端 API 层（services/*.ts）          │  │
+│  │  walkApi / shopApi / groomApi             │  │
+│  │  统一签名：与 HTTP 接口同构，localStorage  │  │
+│  │  充当服务端存储，未来可无缝替换为 fetch     │  │
+│  └──────────────────────────────────────────┘  │
+└───────────┬───────────────────────┬────────────┘
+            │                       │
+   开发环境 │                       │ 生产环境
+            ▼                       ▼
+  ┌─────────────────┐     ┌──────────────────────┐
+  │ Vite dev server │     │ Cloudflare Worker     │
+  │ /api/glm 代理    │     │ czb-glm-proxy         │
+  │ （转发智谱接口） │     │ （CORS 中转 + Key 托管）│
+  └────────┬────────┘     └───────────┬──────────┘
+           ▼                          ▼
+     ┌──────────────────────────────────────┐
+     │     智谱 BigModel · GLM-4-flash       │
+     │     https://open.bigmodel.cn          │
+     └──────────────────────────────────────┘
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+**双模式 AI 客户端**：`src/lib/glm.ts` 在开发环境走 Vite 内置代理（避免跨域），生产环境走 Cloudflare Worker（Key 托管在 Worker 端的 Secret 中，**前端 bundle 永不持有密钥**）。两种模式由环境变量自动切换，上层业务代码无感知。
+
+### 目录结构
+
+```
+chuanzhibei/
+├── src/
+│   ├── pages/            # 七个页面（Home + 六模块）
+│   │   ├── Home.tsx          # 星球首页（昼夜系统、精灵图漫步、模块导航）
+│   │   ├── Walk.tsx          # 临时遛狗官（匹配大厅）
+│   │   ├── WalkTrack.tsx     # 实时轨迹页（雷达地图、回放）
+│   │   ├── Recipe.tsx        # 鲜食食堂（配餐 + 粮食商店 + 购物车）
+│   │   ├── Clinic.tsx        # 赛博诊所（AI 问诊 + 处方笺）
+│   │   ├── Radar.tsx         # 寻宠雷达
+│   │   ├── Community.tsx     # 宠物圈（瀑布流社区）
+│   │   └── Groom.tsx         # 宠物美容院（AI 顾问 + 变身镜）
+│   ├── components/       # 共享组件（BackToPlanet / Toast / ThemeToggle …）
+│   ├── services/         # 模拟后端 API 层（含表单验证器）
+│   ├── lib/glm.ts        # GLM 双模式客户端
+│   └── styles/           # 页级样式（动画关键帧）
+├── worker/               # Cloudflare Worker 中转脚本
+├── scripts/deploy.mjs    # 一键部署脚本
+├── docs/技术文档.md      # 参赛技术文档
+└── .env.example          # 环境变量模板
+```
+
+## 安装运行指南
+
+### 环境要求
+
+- **Node.js ≥ 20**（推荐 22 LTS）
+- npm ≥ 10
+
+### 本地开发
+
+```bash
+# 1. 安装依赖
+npm install
+
+# 2. 配置环境变量（AI 功能需要）
+cp .env.example .env
+#   在 .env 中填入 VITE_GLM_API_KEY（智谱开放平台申请：https://bigmodel.cn）
+
+# 3. 启动开发服务器
+npm run dev
+#   打开 http://localhost:5173
+
+# 4. 生产构建
+npm run build
+
+# 5. 运行测试
+npm run test       # 单次运行（27 项集成测试）
+npm run test:watch # 监听模式
+
+# 6. 代码检查
+npm run lint
+```
+
+### 环境变量说明
+
+| 变量 | 用途 | 必填 |
+|------|------|------|
+| `VITE_GLM_API_KEY` | 智谱 GLM API Key，本地开发 AI 功能（诊所问诊、美容顾问） | 本地开发必填，**生产构建不需要** |
+| `VITE_GLM_PROXY_URL` | Cloudflare Worker 中转地址，仅生产构建使用 | 仅部署时 |
+
+> ⚠️ `.env` 已加入 `.gitignore`，**永远不会提交到仓库**。生产环境的 Key 托管在 Cloudflare Worker 的 Secret 中。
+
+### 体验方式
+
+- **无需注册**：点击首页「登录」按钮，任意填写昵称（2-12 字）+ 11 位手机号即可「登岛」
+- **日夜切换**：首页右上角开关，星球会在白天与夜晚之间过渡
+
+### 在线演示
+
+- 演示地址：`https://zzzzzz-111.github.io/<仓库名>/` （GitHub Pages 部署）
+- AI 功能由 Cloudflare Worker 中转智谱 GLM-4-flash
+- 评审期间可直接访问，所有数据保存在浏览器 localStorage
+
+## 团队信息
+
+**团队名：No crash** · 传智杯 B 组 · 指导老师：张艳平
+
+| 成员 | 角色 | 分工 |
+|------|------|------|
+| 袁子怡 | 团队负责人 | 统筹项目整体规划，分析赛题需求，确定项目整体方案、页面结构与 AI 交互逻辑，把控开发进度，协调团队工作，整合项目成果，撰写项目文档并负责答辩汇报 |
+| 许文慧 | 前端开发 | 负责 Web 页面前端开发，完成页面布局、样式设计，编写页面交互代码，搭建页面基础框架，调试页面展示效果，优化界面视觉，修复前端页面 bug |
+| 张亚楼 | AI 集成与测试 | 负责 AI 相关功能集成与前端交互实现，接入 AI 能力，调试 AI 交互逻辑，实现 AI 相关页面联动效果，完成整体项目功能测试，优化 AI 响应体验与演示效果 |
+
+## 部署
+
+一键部署（GitHub Pages 源码 + gh-pages 构建分支 + Cloudflare Worker）：
+
+```bash
+GH_TOKEN=<GitHub PAT> GH_USER=<用户名> GH_REPO=<仓库名> \
+CF_TOKEN=<Cloudflare API Token> CF_ACCOUNT=<Account ID> \
+GLM_KEY=<智谱 Key> \
+node scripts/deploy.mjs
+```
+
+详见 `docs/技术文档.md` 的「测试与部署」章节。
