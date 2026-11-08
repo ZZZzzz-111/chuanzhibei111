@@ -1,21 +1,29 @@
 /* ============ 智谱 BigModel（GLM）客户端 ============ */
 
 /**
- * 接口地址：
- * - 本地开发：/api/glm/chat/completions（走 vite.config.mjs 的 glm-proxy 中间件）
- * - 生产部署：VITE_GLM_PROXY_URL 指向 Cloudflare Worker（Key 存在 Worker 端，不进前端 bundle）
+ * 接口地址（自动三态，无需任何配置）：
+ * - 本地开发（npm run dev）：/api/glm/chat/completions，走 vite.config.mjs 的 glm-proxy 中间件，前端带本地 Key
+ * - 生产构建（npm run build）：Cloudflare Worker czb-glm-proxy，Key 由 Worker Secret 注入，前端零密钥
+ * - VITE_GLM_PROXY_URL 可显式覆盖 Worker 地址（换域名/自建中转时用）
  */
-const API_URL: string = import.meta.env.VITE_GLM_PROXY_URL
-  ? String(import.meta.env.VITE_GLM_PROXY_URL)
-  : '/api/glm/chat/completions'
+const WORKER_URL = 'https://czb-glm-proxy.2160410393.workers.dev'
+
+const USE_WORKER = import.meta.env.DEV === false || Boolean(import.meta.env.VITE_GLM_PROXY_URL)
+
+const API_URL: string =
+  import.meta.env.VITE_GLM_PROXY_URL ?? (import.meta.env.DEV ? '/api/glm/chat/completions' : WORKER_URL)
 
 const MODEL = 'glm-4-flash'
 
 export const GLM_API_KEY: string = import.meta.env.VITE_GLM_API_KEY ?? ''
 
-/** 本地代理模式需要本地 Key；Worker 模式由服务端注入，前端无需配置 */
+/**
+ * AI 是否可用：
+ * - 本地：.env 配置了 VITE_GLM_API_KEY 即可
+ * - 生产：Worker 已托管 Key，恒可用（Worker 缺 Secret 时接口返回 500，前端降级提示）
+ */
 export function isApiConfigured(): boolean {
-  return GLM_API_KEY.length > 0 || Boolean(import.meta.env.VITE_GLM_PROXY_URL)
+  return USE_WORKER || GLM_API_KEY.length > 0
 }
 
 export interface ChatMessage {
@@ -52,8 +60,8 @@ export async function streamChat(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      // 本地代理模式由前端带 Key；Worker 模式由服务端注入，前端不持有 Key
-      ...(import.meta.env.VITE_GLM_PROXY_URL ? {} : { Authorization: `Bearer ${GLM_API_KEY}` }),
+      // Worker 模式由服务端注入 Key，前端不持有；本地代理模式由前端带本地 Key
+      ...(USE_WORKER ? {} : { Authorization: `Bearer ${GLM_API_KEY}` }),
     },
     body: JSON.stringify({
       model: MODEL,
