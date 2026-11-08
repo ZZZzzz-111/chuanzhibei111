@@ -45,8 +45,13 @@ export default {
     if (request.method !== 'POST') {
       return new Response('method not allowed', { status: 405, headers: corsHeaders })
     }
-    if (!env.GLM_API_KEY) {
-      return new Response('worker secret GLM_API_KEY missing', { status: 500, headers: corsHeaders })
+    // 兼容两种 Secret 命名：GLM_API_KEY（脚本默认）/ api_key（控制台手动创建）
+    const key = env.GLM_API_KEY || env.api_key
+    if (!key) {
+      return new Response('worker secret missing（请在 Cloudflare 后台绑定 GLM_API_KEY 或 api_key）', {
+        status: 500,
+        headers: corsHeaders,
+      })
     }
 
     // 转发到智谱（SSE 流式原样回传）
@@ -55,7 +60,7 @@ export default {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${env.GLM_API_KEY}`,
+        Authorization: `Bearer ${key}`,
       },
       body,
     })
