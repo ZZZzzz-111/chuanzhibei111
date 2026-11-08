@@ -9,18 +9,22 @@ import type { CSSProperties } from 'react'
  *
  * 白天与夜晚的云都在星球外漂移，夜晚只做压暗处理，不再收进球内（避免像脏斑）。
  */
+
+/** public 资源在 JS 内联样式里必须带 BASE_URL 前缀，否则 GitHub Pages 子路径部署下 404 */
+const IMG = (file: string) => `url('${import.meta.env.BASE_URL}images/${file}')`
+
 const FOREST_SPRITE: CSSProperties = {
-  backgroundImage: "url('/images/forest.png')",
+  backgroundImage: IMG('forest.png'),
   backgroundSize: '100% 100%',
   backgroundRepeat: 'no-repeat',
 }
 const HOUSE_SPRITE: CSSProperties = {
-  backgroundImage: "url('/images/house%20(2).png')",
+  backgroundImage: IMG('house%20(2).png'),
   backgroundSize: '100% 100%',
   backgroundRepeat: 'no-repeat',
 }
 const TREE_SPRITE: CSSProperties = {
-  backgroundImage: "url('/images/tree-512x512.png')",
+  backgroundImage: IMG('tree-512x512.png'),
   backgroundSize: '100% 100%',
   backgroundRepeat: 'no-repeat',
 }
@@ -29,7 +33,7 @@ const TREE_SPRITE: CSSProperties = {
 /** cloud.png 是 2 列 × 4 行雪碧图，按单元格切出单朵云 */
 function cloudSprite(col: number, row: number): CSSProperties {
   return {
-    backgroundImage: "url('/images/cloud.png')",
+    backgroundImage: IMG('cloud.png'),
     backgroundSize: '200% 400%',
     backgroundPosition: `${col * 100}% ${(row * 100) / 3}%`,
     backgroundRepeat: 'no-repeat',

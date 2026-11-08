@@ -516,7 +516,7 @@ function Home() {
             <div
               className="absolute inset-0 rounded-full overflow-hidden"
               style={{
-                background: `url('/images/planet_surface.jpg') center/cover, radial-gradient(circle at 30% 30%, #86efac 0%, #22c55e 50%, #166534 100%)`,
+                background: `url('${import.meta.env.BASE_URL}images/planet_surface.jpg') center/cover, radial-gradient(circle at 30% 30%, #86efac 0%, #22c55e 50%, #166534 100%)`,
                 boxShadow: isNight
                   ? '0 0 44px rgba(96,165,250,0.3), 0 0 100px rgba(96,165,250,0.12), inset -16px -16px 50px rgba(0,0,0,0.65)'
                   : '0 0 60px rgba(56,189,248,0.45), 0 0 120px rgba(56,189,248,0.15), inset -16px -16px 50px rgba(0,0,0,0.4)',
