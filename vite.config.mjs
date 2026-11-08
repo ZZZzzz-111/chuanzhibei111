@@ -56,7 +56,8 @@ const glmProxy = {
 export default defineConfig({
   plugins: [react(), tailwindcss(), glmProxy],
   // GitHub Pages 项目站点的 URL 是 https://<user>.github.io/<repo>/，构建时用 GH_BASE_PATH 注入子路径
-  base: process.env.GH_BASE_PATH || '/',
+  // base: process.env.GH_BASE_PATH || '/',
+  base: '/chuanzhibei111/',
   // 缓存移到系统 Temp：安全软件拦截项目目录内 node 的随机目录创建（EPERM mkdir）
   // 用 os.tmpdir() 保证跨用户/跨机器可移植
   cacheDir: path.join(os.tmpdir(), 'chuanzhibei-vite-cache'),
